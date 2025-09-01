@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Polyline,
+  useMap,
+} from "react-leaflet";
 import L from "leaflet";
 import webSocketService from "../services/websocket";
 
@@ -42,6 +49,34 @@ const createBusIcon = (color = "#0066cc", isSelected = false) => {
   });
 };
 
+// Custom route stop icon
+const createStopIcon = (color = "#666666", stopNumber = "") => {
+  return L.divIcon({
+    html: `
+      <div style="
+        background-color: ${color};
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      ">
+        ${stopNumber}
+      </div>
+    `,
+    className: "custom-stop-icon",
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+    popupAnchor: [0, -10],
+  });
+};
+
 // Component to update map view when data changes
 function MapUpdater({ buses, selectedRoute }) {
   const map = useMap();
@@ -72,6 +107,8 @@ function MapUpdater({ buses, selectedRoute }) {
 function BusMap({ buses = [], routes = [], selectedRoute }) {
   const [realTimeBuses, setRealTimeBuses] = useState(buses);
   const [selectedBus, setSelectedBus] = useState(null);
+  const [showRoutes, setShowRoutes] = useState(true);
+  const [showStops, setShowStops] = useState(true);
   const mapRef = useRef();
 
   useEffect(() => {
@@ -203,18 +240,151 @@ function BusMap({ buses = [], routes = [], selectedRoute }) {
             </Marker>
           );
         })}
+
+        {/* Route Lines and Stops */}
+        {showRoutes &&
+          routes.map((route) => {
+            // Filter route based on selectedRoute
+            if (selectedRoute && route.id !== selectedRoute) return null;
+
+            const routeColor = route.color || "#0066cc";
+            const stops = route.stops || [];
+
+            if (stops.length < 2) return null; // Need at least 2 stops to draw a line
+
+            // Create route path from stops
+            const routePath = stops
+              .sort((a, b) => a.stop_order - b.stop_order)
+              .map((stop) => [
+                parseFloat(stop.latitude),
+                parseFloat(stop.longitude),
+              ]);
+
+            return (
+              <div key={`route-${route.id}`}>
+                {/* Route Line */}
+                <Polyline
+                  positions={routePath}
+                  color={routeColor}
+                  weight={4}
+                  opacity={0.7}
+                  dashArray={selectedRoute === route.id ? "0" : "10, 10"}
+                >
+                  <Popup>
+                    <div className="route-popup">
+                      <h3 style={{ color: routeColor }}>
+                        🛣️ Route {route.route_number}
+                      </h3>
+                      <p>
+                        <strong>{route.name}</strong>
+                      </p>
+                      <p>{route.description}</p>
+                      <p>
+                        <strong>Stops:</strong> {stops.length}
+                      </p>
+                      <p>
+                        <strong>Active Buses:</strong> {route.buses_count || 0}
+                      </p>
+                    </div>
+                  </Popup>
+                </Polyline>
+
+                {/* Route Stops */}
+                {showStops &&
+                  stops.map((stop) => {
+                    const position = [
+                      parseFloat(stop.latitude),
+                      parseFloat(stop.longitude),
+                    ];
+
+                    return (
+                      <Marker
+                        key={`stop-${route.id}-${stop.id}`}
+                        position={position}
+                        icon={createStopIcon(routeColor, stop.stop_order)}
+                      >
+                        <Popup>
+                          <div className="stop-popup">
+                            <h3 style={{ color: routeColor }}>
+                              🚨 {stop.stop_name}
+                            </h3>
+                            <p>
+                              <strong>Route:</strong> {route.route_number} -{" "}
+                              {route.name}
+                            </p>
+                            <p>
+                              <strong>Stop Order:</strong> #{stop.stop_order}
+                            </p>
+                            {stop.estimated_time && (
+                              <p>
+                                <strong>Estimated Time:</strong>{" "}
+                                {stop.estimated_time}
+                              </p>
+                            )}
+                            <p>
+                              <small>
+                                Lat: {stop.latitude}, Lng: {stop.longitude}
+                              </small>
+                            </p>
+                          </div>
+                        </Popup>
+                      </Marker>
+                    );
+                  })}
+              </div>
+            );
+          })}
       </MapContainer>
 
       <div className="map-legend">
         <h4>Legend</h4>
+
+        {/* Route Colors */}
+        {routes.map((route) => (
+          <div key={`legend-route-${route.id}`} className="legend-item">
+            <div
+              className="legend-color"
+              style={{ backgroundColor: route.color }}
+            ></div>
+            <span>
+              Route {route.route_number} - {route.name}
+            </span>
+          </div>
+        ))}
+
+        {/* General Legend Items */}
         <div className="legend-item">
-          <div
-            className="legend-color"
-            style={{ backgroundColor: "#0066cc" }}
-          ></div>
-          <span>Bus Location</span>
+          <div className="legend-icon">🚌</div>
+          <span>Active Bus</span>
         </div>
-        <p className="legend-note">Click on a bus for details</p>
+        <div className="legend-item">
+          <div className="legend-icon">🚨</div>
+          <span>Bus Stop</span>
+        </div>
+
+        {/* Controls */}
+        <div className="legend-controls">
+          <label>
+            <input
+              type="checkbox"
+              checked={showRoutes}
+              onChange={(e) => setShowRoutes(e.target.checked)}
+            />
+            Show Routes
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              checked={showStops}
+              onChange={(e) => setShowStops(e.target.checked)}
+            />
+            Show Stops
+          </label>
+        </div>
+
+        <p className="legend-note">
+          Click on buses, routes, or stops for details
+        </p>
       </div>
 
       <div className="map-status">
@@ -226,6 +396,13 @@ function BusMap({ buses = [], routes = [], selectedRoute }) {
           {webSocketService.isConnected() ? "🟢 Live" : "🔴 Offline"}
         </span>
         <span className="bus-count">{realTimeBuses.length} buses tracked</span>
+        <span className="route-count">{routes.length} routes</span>
+        {selectedRoute && (
+          <span className="selected-route">
+            Showing: Route{" "}
+            {routes.find((r) => r.id === selectedRoute)?.route_number}
+          </span>
+        )}
       </div>
     </div>
   );

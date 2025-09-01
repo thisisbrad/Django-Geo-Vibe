@@ -225,6 +225,31 @@ body {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
+.legend-icon {
+  font-size: 14px;
+  width: 16px;
+  text-align: center;
+}
+
+.legend-controls {
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.legend-controls label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.legend-controls input[type="checkbox"] {
+  margin: 0;
+}
+
 .legend-note {
   margin: 0.5rem 0 0 0;
   font-size: 0.7rem;
@@ -257,6 +282,21 @@ body {
   font-weight: 600;
 }
 
+.route-count,
+.selected-route {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.selected-route {
+  font-weight: 600;
+  color: #2c3e50;
+  background-color: #e3f2fd;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.25rem;
+}
+
 /* Bus Popup */
 .bus-popup {
   min-width: 200px;
@@ -270,6 +310,41 @@ body {
 .bus-popup p {
   margin: 0.25rem 0;
   font-size: 0.9rem;
+}
+
+/* Route Popup */
+.route-popup {
+  min-width: 200px;
+}
+
+.route-popup h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.route-popup p {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+}
+
+/* Stop Popup */
+.stop-popup {
+  min-width: 180px;
+}
+
+.stop-popup h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+}
+
+.stop-popup p {
+  margin: 0.25rem 0;
+  font-size: 0.8rem;
+}
+
+.stop-popup small {
+  color: #666;
+  font-size: 0.7rem;
 }
 
 /* Bus List */
@@ -435,6 +510,11 @@ body {
 
 /* Custom Leaflet overrides */
 .custom-bus-icon {
+  background: none !important;
+  border: none !important;
+}
+
+.custom-stop-icon {
   background: none !important;
   border: none !important;
 }
