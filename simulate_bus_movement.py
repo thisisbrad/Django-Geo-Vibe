@@ -40,11 +40,11 @@ def simulate_bus_movements():
             
             # Create location update
             location_data = {
-                'latitude': new_lat,
-                'longitude': new_lng,
-                'speed': speed,
-                'heading': heading,
-                'accuracy': random.uniform(3, 10)  # GPS accuracy in meters
+                'latitude': round(new_lat, 8),  # Round to 8 decimal places to fit DecimalField(max_digits=10, decimal_places=8)
+                'longitude': round(new_lng, 8), # Round to 8 decimal places to fit DecimalField(max_digits=11, decimal_places=8)
+                'speed': round(speed, 2),
+                'heading': round(heading, 2),
+                'accuracy': round(random.uniform(3, 10), 2)  # GPS accuracy in meters
             }
             
             try:
@@ -56,6 +56,7 @@ def simulate_bus_movements():
                     print(f"✅ Updated {bus['bus_number']} - Lat: {new_lat:.6f}, Lng: {new_lng:.6f}, Speed: {speed:.1f} km/h")
                 else:
                     print(f"❌ Failed to update {bus['bus_number']}: {response.status_code}")
+                    print(f"   Error response: {response.text}")
                     
             except Exception as e:
                 print(f"❌ Error updating {bus['bus_number']}: {e}")

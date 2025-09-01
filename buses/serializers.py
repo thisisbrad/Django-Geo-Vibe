@@ -47,7 +47,7 @@ class BusSerializer(serializers.ModelSerializer):
 class BusLocationCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = BusLocation
-        fields = ['bus', 'latitude', 'longitude', 'speed', 'heading', 'accuracy']
+        fields = ['latitude', 'longitude', 'speed', 'heading', 'accuracy']
 
 
 class BusTrackingSerializer(serializers.ModelSerializer):

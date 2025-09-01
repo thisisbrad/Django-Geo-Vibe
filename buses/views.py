@@ -6,6 +6,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django.db.models import Q
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 from .models import Route, Bus, BusLocation, RouteStop
 from .serializers import (
@@ -71,7 +73,41 @@ class BusViewSet(viewsets.ModelViewSet):
         bus = self.get_object()
         serializer = BusLocationCreateSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(bus=bus)
+            location = serializer.save(bus=bus)
+            
+            # Broadcast the location update via WebSocket
+            channel_layer = get_channel_layer()
+            if channel_layer:
+                location_data = BusLocationSerializer(location).data
+                
+                print(f"Broadcasting update for bus {bus.bus_number} (ID: {bus.id})")
+                
+                # Send to global bus tracking group
+                async_to_sync(channel_layer.group_send)(
+                    'bus_tracking',
+                    {
+                        'type': 'bus_location_update',
+                        'bus_id': bus.id,
+                        'bus_number': bus.bus_number,
+                        'location': location_data
+                    }
+                )
+                
+                # Send to route-specific group
+                async_to_sync(channel_layer.group_send)(
+                    f'route_{bus.route_id}',
+                    {
+                        'type': 'bus_location_update',
+                        'bus_id': bus.id,
+                        'bus_number': bus.bus_number,
+                        'location': location_data
+                    }
+                )
+                
+                print(f"Broadcast sent for bus {bus.bus_number}")
+            else:
+                print("No channel layer available")
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

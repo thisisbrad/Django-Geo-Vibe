@@ -5,4 +5,120 @@ from .models import Bus, BusLocation
 from .serializers import BusTrackingSerializer
 
 
-class BusTrackingConsumer(AsyncWebsocketConsumer):\n    async def connect(self):\n        self.room_group_name = 'bus_tracking'\n        \n        # Join room group\n        await self.channel_layer.group_add(\n            self.room_group_name,\n            self.channel_name\n        )\n        \n        await self.accept()\n        \n        # Send initial data\n        initial_data = await self.get_all_buses_data()\n        await self.send(text_data=json.dumps({\n            'type': 'initial_data',\n            'buses': initial_data\n        }))\n    \n    async def disconnect(self, close_code):\n        # Leave room group\n        await self.channel_layer.group_discard(\n            self.room_group_name,\n            self.channel_name\n        )\n    \n    # Receive message from WebSocket\n    async def receive(self, text_data):\n        text_data_json = json.loads(text_data)\n        message_type = text_data_json.get('type')\n        \n        if message_type == 'get_buses':\n            buses_data = await self.get_all_buses_data()\n            await self.send(text_data=json.dumps({\n                'type': 'buses_update',\n                'buses': buses_data\n            }))\n    \n    # Receive message from room group\n    async def bus_location_update(self, event):\n        # Send message to WebSocket\n        await self.send(text_data=json.dumps({\n            'type': 'location_update',\n            'bus_id': event['bus_id'],\n            'location': event['location']\n        }))\n    \n    async def bus_status_update(self, event):\n        # Send bus status update to WebSocket\n        await self.send(text_data=json.dumps({\n            'type': 'status_update',\n            'bus_id': event['bus_id'],\n            'status': event['status']\n        }))\n    \n    @database_sync_to_async\n    def get_all_buses_data(self):\n        buses = Bus.objects.filter(is_active=True)\n        serializer = BusTrackingSerializer(buses, many=True)\n        return serializer.data\n\n\nclass RouteTrackingConsumer(AsyncWebsocketConsumer):\n    async def connect(self):\n        self.route_id = self.scope['url_route']['kwargs']['route_id']\n        self.room_group_name = f'route_{self.route_id}'\n        \n        # Join room group\n        await self.channel_layer.group_add(\n            self.room_group_name,\n            self.channel_name\n        )\n        \n        await self.accept()\n        \n        # Send initial data for this route\n        initial_data = await self.get_route_buses_data()\n        await self.send(text_data=json.dumps({\n            'type': 'initial_data',\n            'route_id': self.route_id,\n            'buses': initial_data\n        }))\n    \n    async def disconnect(self, close_code):\n        # Leave room group\n        await self.channel_layer.group_discard(\n            self.room_group_name,\n            self.channel_name\n        )\n    \n    # Receive message from WebSocket\n    async def receive(self, text_data):\n        text_data_json = json.loads(text_data)\n        message_type = text_data_json.get('type')\n        \n        if message_type == 'get_route_buses':\n            buses_data = await self.get_route_buses_data()\n            await self.send(text_data=json.dumps({\n                'type': 'route_buses_update',\n                'route_id': self.route_id,\n                'buses': buses_data\n            }))\n    \n    # Receive message from room group\n    async def bus_location_update(self, event):\n        # Send message to WebSocket\n        await self.send(text_data=json.dumps({\n            'type': 'location_update',\n            'bus_id': event['bus_id'],\n            'location': event['location']\n        }))\n    \n    @database_sync_to_async\n    def get_route_buses_data(self):\n        buses = Bus.objects.filter(route_id=self.route_id, is_active=True)\n        serializer = BusTrackingSerializer(buses, many=True)\n        return serializer.data
+class BusTrackingConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.room_group_name = 'bus_tracking'
+        
+        # Join room group
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        
+        await self.accept()
+        
+        # Send initial data
+        initial_data = await self.get_all_buses_data()
+        await self.send(text_data=json.dumps({
+            'type': 'initial_data',
+            'buses': initial_data
+        }))
+    
+    async def disconnect(self, close_code):
+        # Leave room group
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+    
+    # Receive message from WebSocket
+    async def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        message_type = text_data_json.get('type')
+        
+        if message_type == 'get_buses':
+            buses_data = await self.get_all_buses_data()
+            await self.send(text_data=json.dumps({
+                'type': 'buses_update',
+                'buses': buses_data
+            }))
+    
+    # Receive message from room group
+    async def bus_location_update(self, event):
+        # Send message to WebSocket
+        await self.send(text_data=json.dumps({
+            'type': 'location_update',
+            'bus_id': event['bus_id'],
+            'location': event['location']
+        }))
+    
+    async def bus_status_update(self, event):
+        # Send bus status update to WebSocket
+        await self.send(text_data=json.dumps({
+            'type': 'status_update',
+            'bus_id': event['bus_id'],
+            'status': event['status']
+        }))
+    
+    @database_sync_to_async
+    def get_all_buses_data(self):
+        buses = Bus.objects.filter(is_active=True)
+        serializer = BusTrackingSerializer(buses, many=True)
+        return serializer.data
+
+
+class RouteTrackingConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.route_id = self.scope['url_route']['kwargs']['route_id']
+        self.room_group_name = f'route_{self.route_id}'
+        
+        # Join room group
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        
+        await self.accept()
+        
+        # Send initial data for this route
+        initial_data = await self.get_route_buses_data()
+        await self.send(text_data=json.dumps({
+            'type': 'initial_data',
+            'route_id': self.route_id,
+            'buses': initial_data
+        }))
+    
+    async def disconnect(self, close_code):
+        # Leave room group
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+    
+    # Receive message from WebSocket
+    async def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        message_type = text_data_json.get('type')
+        
+        if message_type == 'get_route_buses':
+            buses_data = await self.get_route_buses_data()
+            await self.send(text_data=json.dumps({
+                'type': 'route_buses_update',
+                'route_id': self.route_id,
+                'buses': buses_data
+            }))
+    
+    # Receive message from room group
+    async def bus_location_update(self, event):
+        # Send message to WebSocket
+        await self.send(text_data=json.dumps({
+            'type': 'location_update',
+            'bus_id': event['bus_id'],
+            'location': event['location']
+        }))
+    
+    @database_sync_to_async
+    def get_route_buses_data(self):
+        buses = Bus.objects.filter(route_id=self.route_id, is_active=True)
+        serializer = BusTrackingSerializer(buses, many=True)
+        return serializer.data
