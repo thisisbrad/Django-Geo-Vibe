@@ -7,7 +7,7 @@ class WebSocketService {
     this.listeners = {};
   }
 
-  connect(url = "ws://localhost:8000/ws/buses/") {
+  connect(url = "ws://localhost:8001/ws/buses/") {
     try {
       this.socket = new WebSocket(url);
 

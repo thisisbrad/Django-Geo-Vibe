@@ -5,7 +5,7 @@ import json
 from decimal import Decimal
 
 # API base URL
-API_BASE = 'http://localhost:8000/api'
+API_BASE = 'http://localhost:8001/api'
 
 def simulate_bus_movements():
     """Simulate real-time bus movements by updating their locations"""

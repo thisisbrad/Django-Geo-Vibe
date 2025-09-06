@@ -131,6 +131,8 @@ CORS_ALLOW_ALL_ORIGINS = True  # Only for development
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite dev server
     "http://127.0.0.1:5173",
+    "http://localhost:5174",  # Vite dev server (alternative port)
+    "http://127.0.0.1:5174",
 ]
 
 # Django REST Framework settings

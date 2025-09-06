@@ -1,27 +1,31 @@
-# Bus Tracking System
+# Django-Geo-Vide: Real-time Bus Tracking System
 
-A real-time bus tracking application built with Django REST API backend and React frontend with interactive maps.
+A real-time bus tracking application built with Django REST API backend and React frontend with interactive maps. This system enables administrators and users to monitor bus locations, manage routes, and view real-time updates on an interactive map.
 
-## Features
+## 🚌 Features
 
-🚌 **Real-time Bus Tracking**: Track multiple buses on an interactive map
-🗺️ **Interactive Maps**: Powered by Leaflet and OpenStreetMap
-🛣️ **Route Management**: Manage bus routes with colored visualization
-📡 **WebSocket Updates**: Live location updates without page refresh
-🎨 **Responsive Design**: Works on desktop and mobile devices
-📊 **Admin Panel**: Django admin for managing buses, routes, and locations
+- **Real-time Bus Tracking**: Track multiple buses on an interactive map with live updates
+- **Interactive Maps**: Powered by Leaflet and OpenStreetMap with smooth animations
+- **Route Management**: Manage bus routes with color-coded visualization
+- **WebSocket Updates**: Live location updates without page refresh
+- **Responsive Design**: Works on desktop and mobile devices
+- **Admin Panel**: Django admin for managing buses, routes, and locations
 
-## Technology Stack
+## 🏗️ Architecture
 
-### Backend
+The system follows a **client-server architecture** with a decoupled frontend (React/Vite) and backend (Django REST + WebSockets). It uses an **ASGI server** to support synchronous HTTP and asynchronous WebSocket connections.
+
+### Technology Stack
+
+#### Backend
 
 - **Django 5.2**: Web framework
 - **Django REST Framework**: API development
-- **WebSockets (Channels)**: Real-time communication
+- **Django Channels**: WebSocket support
 - **SQLite**: Database (easily upgradeable to PostgreSQL)
-- **Redis**: WebSocket channel layer (optional, falls back to in-memory)
+- **Uvicorn**: ASGI server for WebSocket support
 
-### Frontend
+#### Frontend
 
 - **React 18**: UI framework
 - **Vite**: Build tool and dev server
@@ -29,27 +33,40 @@ A real-time bus tracking application built with Django REST API backend and Reac
 - **React-Leaflet**: React integration for Leaflet
 - **Axios**: HTTP client
 
-## Quick Start
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Python 3.7+
+- Node.js 14+
+- pip (Python package manager)
+- npm (Node package manager)
 
 ### 1. Backend Setup
 
 ```bash
+# Clone the repository
+git clone <repository-url>
+cd django-geo-vide
+
 # Create and activate virtual environment
 python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\\Scripts\\activate
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
-pip install django djangorestframework django-cors-headers channels channels-redis
+# Install Python dependencies
+pip install django djangorestframework django-cors-headers channels channels-redis uvicorn[standard]
 
-# Run migrations and create sample data
+# Run migrations
 python manage.py migrate
+
+# Create sample data
 python manage.py create_sample_data
 
 # Create admin user (optional)
 python manage.py createsuperuser
 
-# Start Django server
-python manage.py runserver 8000
+# Start the ASGI server
+uvicorn bus_tracking_backend.asgi:application --host 127.0.0.1 --port 8001
 ```
 
 ### 2. Frontend Setup
@@ -65,13 +82,28 @@ npm install
 npm run dev
 ```
 
-### 3. Access the Application
+### 3. Start Simulation (for demo)
 
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:8000/api/
-- **Admin Panel**: http://localhost:8000/admin/ (admin/admin123)
+In a new terminal:
 
-## API Endpoints
+```bash
+# Activate virtual environment
+source venv/bin/activate
+
+# Install requests library
+pip install requests
+
+# Run the simulation script
+python simulate_bus_movement.py
+```
+
+## 🌐 Access the Application
+
+- **Frontend**: http://localhost:5173 (or the port shown in terminal)
+- **Backend API**: http://localhost:8001/api/
+- **Admin Panel**: http://localhost:8001/admin/ (admin/admin123)
+
+## 🛠️ API Endpoints
 
 ### Routes
 
@@ -93,19 +125,19 @@ npm run dev
 - `GET /api/locations/` - List all locations
 - `GET /api/locations/latest/` - Get latest location for each bus
 
-## WebSocket Connections
+## 🔌 WebSocket Connections
 
 ### Bus Tracking
 
 ```javascript
 // Connect to all buses
-ws://localhost:8000/ws/buses/
+ws://localhost:8001/ws/buses/
 
 // Connect to specific route
-ws://localhost:8000/ws/route/{route_id}/
+ws://localhost:8001/ws/route/{route_id}/
 ```
 
-## Sample Data
+## 🗺️ Sample Data
 
 The system comes with pre-configured sample data:
 
@@ -128,31 +160,10 @@ The system comes with pre-configured sample data:
 - **B202A**: University Express
 - **B303A**: Airport Shuttle
 
-## Simulating Real-time Movement
-
-To simulate bus movements for demonstration:
-
-```bash
-# Install requests if not already installed
-pip install requests
-
-# Run the simulation script
-python simulate_bus_movement.py
-```
-
-This script will:
-
-- Update bus locations every 10 seconds
-- Simulate realistic movement patterns
-- Generate random speeds and headings
-- Show live updates on the map
-
-## Development
-
-### Project Structure
+## 📁 Project Structure
 
 ```
-bus-tracking/
+django-geo-vide/
 ├── bus_tracking_backend/     # Django project settings
 ├── buses/                    # Main Django app
 │   ├── models.py            # Bus, Route, Location models
@@ -165,27 +176,11 @@ bus-tracking/
 │   │   ├── components/      # React components
 │   │   ├── services/        # API and WebSocket services
 │   │   └── App.jsx          # Main app component
-│   └── package.json
 ├── manage.py                # Django management script
 └── simulate_bus_movement.py  # Demo script
 ```
 
-### Key Components
-
-#### Backend Models
-
-- **Route**: Bus routes with stops and styling
-- **Bus**: Individual bus vehicles
-- **BusLocation**: GPS coordinates with timestamps
-- **RouteStop**: Stops along routes
-
-#### Frontend Components
-
-- **BusMap**: Interactive map with real-time markers
-- **BusList**: Sidebar with bus details and status
-- **RouteSelector**: Route filtering dropdown
-
-## Customization
+## ⚙️ Customization
 
 ### Adding New Routes
 
@@ -211,7 +206,7 @@ Edit `frontend/src/App.css`:
 - Adjust responsive breakpoints
 - Customize component layouts
 
-## Production Deployment
+## 🏭 Production Deployment
 
 ### Backend (Django)
 
@@ -239,14 +234,14 @@ ALLOWED_HOSTS=your-domain.com
 CORS_ALLOWED_ORIGINS=https://your-domain.com
 ```
 
-## Troubleshooting
+## 🐛 Troubleshooting
 
 ### Common Issues
 
 1. **WebSocket Connection Failed**
 
-   - Check if Django server is running
-   - Verify WebSocket URL in frontend
+   - Check if Django server is running with ASGI (uvicorn)
+   - Verify WebSocket URL in frontend matches backend
    - Ensure CORS settings allow WebSocket connections
 
 2. **Map Not Loading**
@@ -256,7 +251,7 @@ CORS_ALLOWED_ORIGINS=https://your-domain.com
    - Check browser console for JavaScript errors
 
 3. **API Errors**
-   - Verify Django server is running on port 8000
+   - Verify Django server is running on correct port
    - Check CORS configuration
    - Ensure database migrations are applied
 
@@ -282,7 +277,7 @@ LOGGING = {
 }
 ```
 
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create feature branch: `git checkout -b feature-name`
@@ -290,11 +285,11 @@ LOGGING = {
 4. Push branch: `git push origin feature-name`
 5. Submit pull request
 
-## License
+## 📄 License
 
 This project is open source and available under the [MIT License](LICENSE).
 
-## Screenshots
+## 📸 Screenshots
 
 The application provides:
 
@@ -309,4 +304,4 @@ The application provides:
 
 - Admin: `admin` / `admin123`
 - Frontend: http://localhost:5173
-- Backend: http://localhost:8000
+- Backend: http://localhost:8001
