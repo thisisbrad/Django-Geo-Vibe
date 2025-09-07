@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Backend Architecture - Django-Geo-Vide Documentation</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+  </head>
+  <body>
+    <header>
+      <h1>Django-Geo-Vide Documentation</h1>
+      <p>Real-time bus tracking system documentation</p>
+    </header>
+
+    <div class="container">
+      <h1>Backend Architecture</h1>
+
+      <h2>Data Models & Relationships</h2>
+
+      <p>
+        The data models form the foundation of the application, defining the
+        structure and relationships between entities in the bus tracking system.
+      </p>
+
+      <h3>Model Relationships</h3>
+
+      <div class="mermaid">
+        erDiagram ROUTE { string route_number PK string name string description
+        string color boolean is_active } BUS { string bus_number PK string
+        license_plate string driver_name integer capacity boolean is_active }
+        BUS_LOCATION { integer id PK float latitude float longitude float speed
+        float heading float accuracy datetime timestamp } ROUTE_STOP { integer
+        id PK string stop_name float latitude float longitude integer stop_order
+        time estimated_time boolean is_active } ROUTE ||--o{ BUS : "contains"
+        ROUTE ||--o{ ROUTE_STOP : "has" BUS ||--o{ BUS_LOCATION : "has"
+      </div>
+
+      <h2>API Endpoints Reference</h2>
+
+      <p>
+        The backend provides RESTful API endpoints for managing the various
+        entities in the system:
+      </p>
+
+      <ul>
+        <li><strong>Routes API</strong>: Manage bus routes</li>
+        <li><strong>Buses API</strong>: Manage individual buses</li>
+        <li><strong>Locations API</strong>: Handle bus location data</li>
+        <li><strong>Route Stops API</strong>: Manage stops along routes</li>
+      </ul>
+
+      <h2>Serializers Implementation</h2>
+
+      <p>
+        Django REST Framework serializers handle the conversion between Python
+        objects and JSON representations for API responses. Custom serializers
+        optimize data payloads for real-time transmission.
+      </p>
+
+      <h2>WebSocket Implementation</h2>
+
+      <p>
+        The ASGI configuration in <code>asgi.py</code> sets up a
+        <code>ProtocolTypeRouter</code> that directs incoming connections based
+        on their protocol type. HTTP requests are routed to the standard Django
+        ASGI application, while WebSocket connections are handled by an
+        <code>AuthMiddlewareStack</code> wrapped around a
+        <code>URLRouter</code>. This router delegates WebSocket connections to
+        specific consumers based on URL patterns defined in the
+        <code>buses.routing</code> module.
+      </p>
+
+      <pre><code>application = ProtocolTypeRouter({
+    "http": get_asgi_application(),
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            websocket_urlpatterns
+        )
+    ),
+})</code></pre>
+
+      <h2>Admin Interface Configuration</h2>
+
+      <p>
+        The Django admin interface provides a powerful administrative interface
+        for managing the application's data. Custom admin classes enhance the
+        interface with specialized views and actions for managing buses, routes,
+        and locations.
+      </p>
+
+      <div class="nav-links">
+        <a href="frontend-architecture.html">← Frontend Architecture</a>
+        <a href="real-time-tracking.html">Real-time Tracking System →</a>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Frontend Architecture - Django-Geo-Vide Documentation</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+  </head>
+  <body>
+    <header>
+      <h1>Django-Geo-Vide Documentation</h1>
+      <p>Real-time bus tracking system documentation</p>
+    </header>
+
+    <div class="container">
+      <h1>Frontend Architecture</h1>
+
+      <h2>Component Hierarchy</h2>
+
+      <p>
+        The frontend application follows a component-based architecture with
+        React. The main components include:
+      </p>
+
+      <ul>
+        <li>
+          <strong>App</strong>: Root component that manages global state and
+          routing
+        </li>
+        <li>
+          <strong>BusMap</strong>: Interactive map component displaying bus
+          locations and routes
+        </li>
+        <li>
+          <strong>BusList</strong>: List component showing detailed information
+          about buses
+        </li>
+        <li>
+          <strong>RouteSelector</strong>: Component for filtering buses by route
+        </li>
+      </ul>
+
+      <h2>State Management Approach</h2>
+
+      <p>
+        The application follows a unidirectional data flow pattern where state
+        is lifted to the App component and passed down through props. Real-time
+        updates are handled via a singleton WebSocket service that broadcasts
+        location updates to all interested components. This architecture enables
+        efficient state synchronization without requiring complex global state
+        management solutions.
+      </p>
+
+      <div class="mermaid">
+        graph TD A[App.jsx] --> B[RouteSelector.jsx] A --> C[BusList.jsx] A -->
+        D[BusMap.jsx] B --> E[Route Filtering] C --> F[Bus Details] D --> G[Map
+        Visualization]
+      </div>
+
+      <h2>Service Layer Architecture</h2>
+
+      <p>
+        The frontend uses a service layer to handle API calls and WebSocket
+        connections:
+      </p>
+
+      <ul>
+        <li><strong>api.js</strong>: Handles HTTP requests to the REST API</li>
+        <li>
+          <strong>websocket.js</strong>: Manages WebSocket connections for
+          real-time updates
+        </li>
+      </ul>
+
+      <h2>Map Integration with Leaflet</h2>
+
+      <p>
+        The interactive map visualization is built around several core
+        components that work together to display real-time bus tracking data.
+        The BusMap component serves as the central visualization element,
+        rendering a full-screen Leaflet map with OpenStreetMap tiles and
+        overlaying dynamic bus markers. It integrates with the api.js service to
+        fetch initial route and bus data, and with websocket.js to receive
+        real-time location updates. The component hierarchy follows the
+        React-Leaflet pattern with MapContainer as the root, containing
+        TileLayer for base maps, and Marker components for bus locations.
+      </p>
+
+      <div class="nav-links">
+        <a href="core-features.html">← Core Features</a>
+        <a href="backend-architecture.html">Backend Architecture →</a>
+      </div>
+    </div>
+  </body>
+</html>
