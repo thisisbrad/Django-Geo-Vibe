@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Real-time Tracking System - Django-Geo-Vide Documentation</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+  </head>
+  <body>
+    <header>
+      <h1>Django-Geo-Vide Documentation</h1>
+      <p>Real-time bus tracking system documentation</p>
+    </header>
+
+    <div class="container">
+      <h1>Real-time Tracking System</h1>
+
+      <h2>WebSocket Implementation</h2>
+
+      <p>
+        The WebSocket implementation enables real-time communication between the
+        server and connected clients. The system uses Django Channels to handle
+        WebSocket connections, allowing for scalable real-time updates.
+      </p>
+
+      <h2>Frontend WebSocket Service</h2>
+
+      <p>
+        The frontend WebSocket service manages persistent connections and
+        handles message processing. Key features include:
+      </p>
+
+      <ul>
+        <li>
+          <strong>Connection Management</strong>: Establishes and maintains
+          WebSocket connections
+        </li>
+        <li>
+          <strong>Message Handling</strong>: Processes incoming location updates
+        </li>
+        <li>
+          <strong>Reconnection Logic</strong>: Automatically reconnects if the
+          connection is lost
+        </li>
+        <li>
+          <strong>Error Handling</strong>: Gracefully handles connection errors
+        </li>
+      </ul>
+
+      <h2>Data Simulation and Flow</h2>
+
+      <p>
+        The system includes a simulation script that generates realistic bus
+        movement data for testing and demonstration purposes. The simulation:
+      </p>
+
+      <ul>
+        <li>Updates bus locations at regular intervals</li>
+        <li>Calculates realistic speeds and headings</li>
+        <li>Follows predefined routes</li>
+        <li>Generates location history data</li>
+      </ul>
+
+      <h2>Real-time Data Flow Architecture</h2>
+
+      <p>The real-time data flow follows this sequence:</p>
+
+      <ol>
+        <li>
+          <strong>Data Generation</strong>: Either from real GPS devices or
+          simulation
+        </li>
+        <li>
+          <strong>Data Processing</strong>: Server processes and validates
+          location data
+        </li>
+        <li>
+          <strong>Broadcasting</strong>: Updated locations are broadcast to
+          connected clients
+        </li>
+        <li>
+          <strong>Client Update</strong>: Frontend receives updates and
+          refreshes the display
+        </li>
+      </ol>
+
+      <div class="mermaid">
+        graph LR Client[Frontend Client] --> |HTTP GET| API[Django REST API]
+        Client --> |WebSocket| WS[Django WebSocket] API --> DB[(Database)] WS
+        --> DB DB --> API DB --> WS API --> Client WS --> Client subgraph
+        "Frontend Components" Client --> BusMap Client --> RouteSelector Client
+        --> BusList end subgraph "Backend Services" API --> Models WS -->
+        Consumers Consumers --> Models end
+      </div>
+
+      <div class="nav-links">
+        <a href="backend-architecture.html">← Backend Architecture</a>
+        <a href="api-reference.html">API Reference →</a>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Reference - Django-Geo-Vide Documentation</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Django-Geo-Vide Documentation</h1>
+      <p>Real-time bus tracking system documentation</p>
+    </header>
+
+    <div class="container">
+      <h1>API Reference</h1>
+
+      <h2>Routes API</h2>
+
+      <h3>List all routes</h3>
+      <pre><code>GET /api/routes/</code></pre>
+
+      <h3>Get route details</h3>
+      <pre><code>GET /api/routes/{id}/</code></pre>
+
+      <h3>Get buses for a route</h3>
+      <pre><code>GET /api/routes/{id}/buses/</code></pre>
+
+      <h3>Get stops for a route</h3>
+      <pre><code>GET /api/routes/{id}/stops/</code></pre>
+
+      <h2>Buses API</h2>
+
+      <h3>List all buses</h3>
+      <pre><code>GET /api/buses/</code></pre>
+
+      <h3>Get bus details</h3>
+      <pre><code>GET /api/buses/{id}/</code></pre>
+
+      <h3>Get bus location history</h3>
+      <pre><code>GET /api/buses/{id}/locations/</code></pre>
+
+      <h3>Update bus location</h3>
+      <pre><code>POST /api/buses/{id}/update_location/</code></pre>
+
+      <h3>Get real-time tracking data</h3>
+      <pre><code>GET /api/buses/tracking/</code></pre>
+
+      <h2>Locations API</h2>
+
+      <h3>List all locations</h3>
+      <pre><code>GET /api/locations/</code></pre>
+
+      <h3>Get latest location for each bus</h3>
+      <pre><code>GET /api/locations/latest/</code></pre>
+
+      <h2>Route Stops API</h2>
+
+      <h3>List all route stops</h3>
+      <pre><code>GET /api/route_stops/</code></pre>
+
+      <h3>Get route stop details</h3>
+      <pre><code>GET /api/route_stops/{id}/</code></pre>
+
+      <div class="nav-links">
+        <a href="real-time-tracking.html">← Real-time Tracking System</a>
+        <a href="websocket-reference.html">WebSocket Reference →</a>
+      </div>
+    </div>
+  </body>
+</html>

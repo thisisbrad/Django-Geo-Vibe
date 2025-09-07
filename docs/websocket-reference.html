@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSocket Reference - Django-Geo-Vide Documentation</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Django-Geo-Vide Documentation</h1>
+      <p>Real-time bus tracking system documentation</p>
+    </header>
+
+    <div class="container">
+      <h1>WebSocket Reference</h1>
+
+      <h2>Connection Protocol</h2>
+
+      <p>
+        WebSocket connections are established using the WebSocket protocol. The
+        system supports two types of connections:
+      </p>
+
+      <ol>
+        <li>
+          <strong>All Buses</strong>: Connects to receive updates for all buses
+          in the system
+        </li>
+        <li>
+          <strong>Specific Route</strong>: Connects to receive updates for buses
+          on a specific route
+        </li>
+      </ol>
+
+      <h2>Message Types and Payloads</h2>
+
+      <h3>Initial Data Message</h3>
+
+      <p>
+        When a client first connects, an initial data message is sent containing
+        the current state of all relevant buses.
+      </p>
+
+      <h3>Bus Location Update Message</h3>
+
+      <p>
+        As bus locations change, update messages are sent to all connected
+        clients. These messages contain:
+      </p>
+
+      <ul>
+        <li>Bus identifier</li>
+        <li>Current latitude and longitude</li>
+        <li>Speed and heading</li>
+        <li>Timestamp</li>
+      </ul>
+
+      <h3>Bus Status Message</h3>
+
+      <p>
+        Status messages provide information about bus operational status, such
+        as:
+      </p>
+
+      <ul>
+        <li>Active/inactive state</li>
+        <li>Route assignment changes</li>
+        <li>Maintenance status</li>
+      </ul>
+
+      <h2>Broadcasting and Channel Groups</h2>
+
+      <p>
+        The system uses channel groups to efficiently broadcast messages to
+        relevant clients:
+      </p>
+
+      <ul>
+        <li><strong>Global Group</strong>: All connected clients</li>
+        <li>
+          <strong>Route Groups</strong>: Clients interested in specific routes
+        </li>
+      </ul>
+
+      <h2>Frontend Event Handling</h2>
+
+      <p>The frontend WebSocket service handles several types of events:</p>
+
+      <ul>
+        <li>
+          <strong>Connection Open</strong>: Initialize connection and subscribe
+          to relevant groups
+        </li>
+        <li>
+          <strong>Message Receive</strong>: Process incoming data and update UI
+        </li>
+        <li>
+          <strong>Connection Close</strong>: Handle disconnection gracefully
+        </li>
+        <li>
+          <strong>Error Handling</strong>: Manage connection errors and attempt
+          reconnection
+        </li>
+      </ul>
+
+      <div class="nav-links">
+        <a href="api-reference.html">← API Reference</a>
+        <a href="development-guide.html">Development Guide →</a>
+      </div>
+    </div>
+  </body>
+</html>
